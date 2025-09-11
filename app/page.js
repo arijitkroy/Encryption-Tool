@@ -7,7 +7,6 @@ export default function Home() {
   const [encryptTextInput, setEncryptTextInput] = useState("");
   const [decryptTextInput, setDecryptTextInput] = useState("");
   const [encryptFileState, setEncryptFileState] = useState(null);
-  const [decryptFileState, setDecryptFileState] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
   const [encryptedOutput, setEncryptedOutput] = useState("");
   const [encryptedTextUrl, setEncryptedTextUrl] = useState(null);
@@ -26,17 +25,17 @@ export default function Home() {
 
   useEffect(() => {
     // Maintain a blob URL for downloading encrypted text
-    if (encryptedTextUrl) URL.revokeObjectURL(encryptedTextUrl);
+    let url;
     if (encryptedOutput && encryptedOutput.length > 0) {
       const blob = new Blob([encryptedOutput], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
+      url = URL.createObjectURL(blob);
       setEncryptedTextUrl(url);
     } else {
       setEncryptedTextUrl(null);
     }
-    // Cleanup when component unmounts
+    // Cleanup previous URL on change/unmount
     return () => {
-      if (encryptedTextUrl) URL.revokeObjectURL(encryptedTextUrl);
+      if (url) URL.revokeObjectURL(url);
     };
   }, [encryptedOutput]);
 
@@ -217,7 +216,7 @@ export default function Home() {
             Encrypt
           </button>
           {encryptedOutput && (
-            <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all">
+            <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all h-32 overflow-y-auto">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <strong>Encrypted Output:</strong>
                 <div className="flex items-center gap-2">
@@ -272,7 +271,7 @@ export default function Home() {
             Decrypt
           </button>
           {decryptedOutput && (
-            <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all">
+            <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all h-32 overflow-y-auto">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <strong>Decrypted Output:</strong>
                 <button
