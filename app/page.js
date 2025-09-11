@@ -10,6 +10,7 @@ export default function Home() {
   const [decryptFileState, setDecryptFileState] = useState(null);
   const [encryptionKey, setEncryptionKey] = useState("");
   const [encryptedOutput, setEncryptedOutput] = useState("");
+  const [encryptedTextUrl, setEncryptedTextUrl] = useState(null);
   const [decryptedOutput, setDecryptedOutput] = useState("");
   const [decryptedFileUrl, setDecryptedFileUrl] = useState(null);
   const [decryptedFileMeta, setDecryptedFileMeta] = useState({ name: "decrypted-file", type: "" });
@@ -22,6 +23,22 @@ export default function Home() {
     const key = generateKeyString();
     setEncryptionKey(key);
   }, []);
+
+  useEffect(() => {
+    // Maintain a blob URL for downloading encrypted text
+    if (encryptedTextUrl) URL.revokeObjectURL(encryptedTextUrl);
+    if (encryptedOutput && encryptedOutput.length > 0) {
+      const blob = new Blob([encryptedOutput], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      setEncryptedTextUrl(url);
+    } else {
+      setEncryptedTextUrl(null);
+    }
+    // Cleanup when component unmounts
+    return () => {
+      if (encryptedTextUrl) URL.revokeObjectURL(encryptedTextUrl);
+    };
+  }, [encryptedOutput]);
 
   const handleGenerateKey = () => {
     const key = generateKeyString();
@@ -117,6 +134,16 @@ export default function Home() {
     }
   };
 
+  const handleUploadEncryptedTxt = async (file) => {
+    if (!file) return;
+    try {
+      const content = await file.text();
+      setDecryptTextInput(content);
+    } catch (e) {
+      console.error('Failed to read encrypted .txt', e);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1 className="text-5xl font-bold text-center mb-10">Encryption Tool</h1>
@@ -193,12 +220,23 @@ export default function Home() {
             <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <strong>Encrypted Output:</strong>
-                <button
-                  className="px-2 py-1 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-xs"
-                  onClick={handleCopyEncrypted}
-                >
-                  {copiedEncrypted ? 'Copied' : 'Copy'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-2 py-1 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-xs"
+                    onClick={handleCopyEncrypted}
+                  >
+                    {copiedEncrypted ? 'Copied' : 'Copy'}
+                  </button>
+                  {encryptedTextUrl && (
+                    <a
+                      href={encryptedTextUrl}
+                      download={`encrypted-${Date.now()}.txt`}
+                      className="px-2 py-1 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-xs"
+                    >
+                      Download .txt
+                    </a>
+                  )}
+                </div>
               </div>
               {encryptedOutput}
             </div>
@@ -220,10 +258,12 @@ export default function Home() {
             value={decryptTextInput}
             onChange={(e) => setDecryptTextInput(e.target.value)}
           ></textarea>
+          <div className="mt-2 text-xs opacity-70">Or upload a .txt that contains the encrypted JSON</div>
           <input
             type="file"
-            className="mt-4 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-50"
-            onChange={(e) => setDecryptFileState(e.target.files ? e.target.files[0] : null)}
+            accept=".txt,text/plain"
+            className="mt-2 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-50"
+            onChange={(e) => handleUploadEncryptedTxt(e.target.files ? e.target.files[0] : null)}
           />
           <button 
             className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
