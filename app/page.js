@@ -100,19 +100,24 @@ export default function Home() {
   const handleDecrypt = async () => {
     if (!encryptionKey) return;
     try {
-      if (decryptFileState) {
-        const { iv, encryptedData, name, type } = JSON.parse(await decryptFileState.text());
-        const decryptedBlob = await decryptFile(encryptedData, iv, encryptionKey, type);
-        const url = URL.createObjectURL(decryptedBlob);
-        setDecryptedFileUrl(url);
-        setDecryptedFileMeta({ name: name || 'decrypted-file', type: type || '' });
-        setDecryptedOutput("File decrypted. Preview or download below.");
-        return;
-      }
       if (decryptTextInput.trim().length > 0) {
-        const { iv, encryptedData, name, type } = JSON.parse(decryptTextInput);
-        if (Array.isArray(encryptedData) && Array.isArray(iv)) {
+        const parsed = JSON.parse(decryptTextInput);
+        const { iv, encryptedData, name, type } = parsed;
+        const isFilePayload = typeof name === 'string' || typeof type === 'string';
+
+        if (isFilePayload) {
           const decryptedBlob = await decryptFile(encryptedData, iv, encryptionKey, type);
+
+          // If looks like text (no explicit type, or text-like types) and small, show as text
+          const maybeText = !type || type.startsWith('text/') || type === 'application/json';
+          if (maybeText && decryptedBlob.size <= 8192) {
+            const text = await decryptedBlob.text();
+            setDecryptedOutput(text);
+            setDecryptedFileUrl(null);
+            setDecryptedFileMeta({ name: 'decrypted-text', type: 'text/plain' });
+            return;
+          }
+
           const url = URL.createObjectURL(decryptedBlob);
           setDecryptedFileUrl(url);
           setDecryptedFileMeta({ name: name || 'decrypted-file', type: type || '' });
