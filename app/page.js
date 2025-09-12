@@ -144,8 +144,8 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-5xl font-bold text-center mb-10">Encryption Tool</h1>
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 lg:p-24">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-10">Encryption Tool</h1>
 
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
         <div className="w-full px-4">
@@ -163,38 +163,40 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mb-6 w-full max-w-5xl">
+      <div className="mb-4 sm:mb-6 w-full max-w-5xl">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Encryption Key</label>
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col sm:flex-row gap-2">
           <input
             type="text"
-            className="flex-1 h-10 p-2 border border-gray-300 rounded-md dark:bg-neutral-900 dark:text-white"
+            className="flex-1 h-10 p-2 border border-gray-300 rounded-md dark:bg-neutral-900 dark:text-white text-sm"
             placeholder="Encryption key"
             value={encryptionKey}
             onChange={(e) => setEncryptionKey(e.target.value)}
           />
-          <button
-            className="px-3 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700"
-            onClick={handleGenerateKey}
-          >
-            Generate
-          </button>
-          <button
-            className="px-3 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700"
-            onClick={handleCopyKey}
-          >
-            {copied ? 'Copied' : 'Copy'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="px-3 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-sm"
+              onClick={handleGenerateKey}
+            >
+              Generate
+            </button>
+            <button
+              className="px-3 py-2 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-sm"
+              onClick={handleCopyKey}
+            >
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-2 lg:text-left">
+      <div className="mb-16 sm:mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-2 lg:text-left gap-4 lg:gap-0">
         {/* Encryption Section */}
         <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-xl sm:text-2xl font-semibold">
             Encrypt <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">-&gt;</span>
           </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50 text-left">
+          <p className="m-0 max-w-[30ch] text-xs sm:text-sm opacity-50 text-left">
             Encrypt your text or files into a secure code.
           </p>
           {/* Encryption Input and Button will go here */}
@@ -217,8 +219,8 @@ export default function Home() {
           </button>
           {encryptedOutput && (
             <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all h-32 overflow-y-auto">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <strong>Encrypted Output:</strong>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                <strong className="text-sm">Encrypted Output:</strong>
                 <div className="flex items-center gap-2">
                   <button
                     className="px-2 py-1 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-xs"
@@ -237,17 +239,17 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              {encryptedOutput}
+              <div className="text-xs sm:text-sm">{encryptedOutput}</div>
             </div>
           )}
         </div>
 
         {/* Decryption Section */}
         <div className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-xl sm:text-2xl font-semibold">
             Decrypt <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">-&gt;</span>
           </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50 text-left">
+          <p className="m-0 max-w-[30ch] text-xs sm:text-sm opacity-50 text-left">
             Decrypt your secure code to retrieve the original content.
           </p>
           {/* Decryption Input and Button will go here */}
@@ -272,8 +274,8 @@ export default function Home() {
           </button>
           {decryptedOutput && (
             <div className="mt-4 p-2 border border-gray-300 rounded-md dark:bg-neutral-800 dark:text-white break-all h-32 overflow-y-auto">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <strong>Decrypted Output:</strong>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                <strong className="text-sm">Decrypted Output:</strong>
                 <button
                   className="px-2 py-1 rounded-md bg-slate-600 text-white hover:bg-slate-700 text-xs"
                   onClick={handleCopyDecrypted}
@@ -281,7 +283,7 @@ export default function Home() {
                   {copiedDecrypted ? 'Copied' : 'Copy'}
                 </button>
               </div>
-              {decryptedOutput}
+              <div className="text-xs sm:text-sm">{decryptedOutput}</div>
             </div>
           )}
           {decryptedFileUrl && (
